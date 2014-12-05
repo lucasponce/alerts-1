@@ -1,0 +1,42 @@
+//created on: Nov 26, 2014
+package rules
+
+//list any import classes here.
+import com.alert.condition.ConditionMatch;
+import com.alert.condition.ThresholdCondition;
+import com.alert.data.Metric;
+
+
+
+//declare any global variables here
+
+import function com.alert.condition.ThresholdCondition.match;
+
+rule Threshold
+    when
+        $t : ThresholdCondition ( $tc : triggerCategory,  $tid : triggerId, $th : threshold, $op : operator)
+        $m : Metric( $tc == triggerCategory, $tid == triggerId, $value : value)
+        eval( match( $op, $th, $value ) )
+    then
+        String log = $t.getLog($value);
+        System.out.println( "Threshold Match! " + log );
+        ConditionMatch cm = new ConditionMatch($t, log);
+        insertLogical(cm);
+end
+
+
+
+rule AlertOneCondition
+    when
+        $cm : ConditionMatch ( conditionSetSize == 1, conditionSetIndex == 1, $log : log )
+    then
+        System.out.println( "AlertOneCondition! " + $log );
+end
+
+rule AlertTwoCondition
+    when
+        $cm1 : ConditionMatch ( $csid : conditionSetId, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
+        $cm2 : ConditionMatch ( conditionSetId == $csid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )
+    then
+        System.out.println( "AlertTwoCondition!\n  " + $log1 + "\n  " + $log2 );
+end
