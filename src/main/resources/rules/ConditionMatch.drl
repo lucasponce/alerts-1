@@ -5,6 +5,7 @@ package rules
 import com.alert.condition.ConditionMatch;
 import com.alert.condition.ThresholdCondition;
 import com.alert.data.Metric;
+import com.alert.trigger.Trigger;
 
 
 
@@ -13,14 +14,15 @@ import com.alert.data.Metric;
 import function com.alert.condition.ThresholdCondition.match;
 
 rule Threshold
-    when
-        $t : ThresholdCondition ( $tc : triggerCategory,  $tid : triggerId, $th : threshold, $op : operator)
-        $m : Metric( $tc == triggerCategory, $tid == triggerId, $value : value)
+    when 
+        $t  : Trigger( active == true, $tid : id ) 
+        $tc : ThresholdCondition ( triggerId == $tid, $mid : metricId, $th : threshold, $op : operator)
+        $m : Metric( $mid == id, $value : value)
         eval( match( $op, $th, $value ) )
     then
-        String log = $t.getLog($value);
+        String log = $tc.getLog($value);
         System.out.println( "Threshold Match! " + log );
-        ConditionMatch cm = new ConditionMatch($t, log);
+        ConditionMatch cm = new ConditionMatch($tc, log);
         insertLogical(cm);
 end
 
@@ -28,15 +30,21 @@ end
 
 rule AlertOneCondition
     when
-        $cm : ConditionMatch ( conditionSetSize == 1, conditionSetIndex == 1, $log : log )
+        $t  : Trigger( active == true, $tid : id ) 
+        $cm : ConditionMatch ( triggerId == $tid, conditionSetSize == 1, conditionSetIndex == 1, $log : log )
     then
         System.out.println( "AlertOneCondition! " + $log );
+        $t.setActive( false );
+        update( $t );
 end
 
 rule AlertTwoCondition
     when
-        $cm1 : ConditionMatch ( $csid : conditionSetId, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
-        $cm2 : ConditionMatch ( conditionSetId == $csid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )
+        $t  : Trigger( active == true, $tid : id )    
+        $cm1 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
+        $cm2 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )        
     then
         System.out.println( "AlertTwoCondition!\n  " + $log1 + "\n  " + $log2 );
+        $t.setActive( false );
+        update( $t );
 end

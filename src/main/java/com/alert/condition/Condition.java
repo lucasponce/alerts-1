@@ -2,29 +2,16 @@ package com.alert.condition;
 
 public abstract class Condition {
 
-    private String triggerCategory; // Anything such that category + id is unique among all conditions
-    private String triggerId; // e.g. Metric|Metric-12
+    private String triggerId; // the owning trigger
 
-    private int conditionSetId; // e.g. 
     private int conditionSetSize; // e.g. 2 [conditions]
     private int conditionSetIndex; // e.g. 1 [of 2 conditions]
 
-    public Condition(String triggerCategory, String triggerId, int conditionSetId, int conditionSetSize,
-        int conditionSetIndex) {
-        super();
-        this.triggerCategory = triggerCategory;
+    public Condition(String triggerId, int conditionSetSize, int conditionSetIndex) {
+
         this.triggerId = triggerId;
-        this.conditionSetId = conditionSetId;
         this.conditionSetSize = conditionSetSize;
         this.conditionSetIndex = conditionSetIndex;
-    }
-
-    public String getTriggerCategory() {
-        return triggerCategory;
-    }
-
-    public void setTriggerCategory(String triggerCategory) {
-        this.triggerCategory = triggerCategory;
     }
 
     public String getTriggerId() {
@@ -33,14 +20,6 @@ public abstract class Condition {
 
     public void setTriggerId(String triggerId) {
         this.triggerId = triggerId;
-    }
-
-    public int getConditionSetId() {
-        return conditionSetId;
-    }
-
-    public void setConditionSetId(int conditionSetId) {
-        this.conditionSetId = conditionSetId;
     }
 
     public int getConditionSetSize() {

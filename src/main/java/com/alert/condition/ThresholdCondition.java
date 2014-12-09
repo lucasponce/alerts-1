@@ -6,16 +6,26 @@ public class ThresholdCondition extends Condition {
         LT, GT, LTE, GTE
     };
 
+    private String metricId;
     private Operator operator;
     private Double threshold;
 
-    public ThresholdCondition(String triggerCategory, String triggerId, int conditionSetSize, int conditionSetId,
-        int conditionSetIndex, Operator operator, Double threshold) {
+    public ThresholdCondition(String triggerId, String metricId, int conditionSetSize, int conditionSetIndex,
+        Operator operator, Double threshold) {
 
-        super(triggerCategory, triggerId, conditionSetId, conditionSetSize, conditionSetIndex);
+        super(triggerId, conditionSetSize, conditionSetIndex);
 
+        this.metricId = metricId;
         this.operator = operator;
         this.threshold = threshold;
+    }
+
+    public String getMetricId() {
+        return metricId;
+    }
+
+    public void setMetricId(String metricId) {
+        this.metricId = metricId;
     }
 
     public Operator getOperator() {
@@ -35,8 +45,7 @@ public class ThresholdCondition extends Condition {
     }
 
     public String getLog(double value) {
-        return getTriggerCategory() + "/" + getTriggerId() + " : " + value + " " + getOperator().name() + " "
-            + getThreshold();
+        return getTriggerId() + " : " + value + " " + getOperator().name() + " " + getThreshold();
     }
 
     static public boolean match(Operator operator, double threshold, double value) {

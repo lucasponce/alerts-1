@@ -2,31 +2,19 @@ package com.alert.data;
 
 public class Data {
 
-	private String triggerCategory; // Anything such that category + id is
-									// unique among all conditions
-	private String triggerId; // e.g. Metric|Metric-12
+    private String id; // e.g. Metric-12
 
-	public Data(String triggerCategory, String triggerId) {
+    public Data(String id) {
 		super();
-		this.triggerCategory = triggerCategory;
-		this.triggerId = triggerId;
+        this.id = id;
 	}
 
-	public String getTriggerCategory() {
-		return triggerCategory;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setTriggerCategory(String triggerCategory) {
-		this.triggerCategory = triggerCategory;
-	}
-
-	public String getTriggerId() {
-		return triggerId;
-	}
-
-	public void setTriggerId(String triggerId) {
-		this.triggerId = triggerId;
-	}
-
+    public void setId(String id) {
+        this.id = id;
+    }
 
 }

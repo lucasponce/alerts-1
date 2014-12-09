@@ -6,14 +6,12 @@ public class ConditionMatch extends Condition {
     long time;
 
     public ConditionMatch(Condition condition, String log) {
-        this(condition.getTriggerCategory(), condition.getTriggerId(), condition.getConditionSetId(), condition
-            .getConditionSetSize(), condition.getConditionSetIndex(), log);
+        this(condition.getTriggerId(), condition.getConditionSetSize(), condition.getConditionSetIndex(), log);
     }
 
-    public ConditionMatch(String triggerCategory, String triggerId, int conditionSetId, int conditionSetSize,
-        int conditionSetIndex, String log) {
+    public ConditionMatch(String triggerId, int conditionSetSize, int conditionSetIndex, String log) {
 
-        super(triggerCategory, triggerId, conditionSetId, conditionSetSize, conditionSetIndex);
+        super(triggerId, conditionSetSize, conditionSetIndex);
         this.time = System.currentTimeMillis();
         this.log = log;
     }
