@@ -1,6 +1,8 @@
 package com.sample;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import com.alert.condition.ThresholdCondition;
 import com.alert.condition.ThresholdCondition.Operator;
@@ -16,7 +18,7 @@ import org.kie.api.runtime.KieSession;
  */
 public class AlertTest {
 
-    public static final void main(String[] args) {
+    public static final void run(Set<Metric> metrics) {
         try {
             // load up the knowledge base
             KieServices ks = KieServices.Factory.get();
@@ -38,18 +40,34 @@ public class AlertTest {
             kSession.insert(cs2c2);
 
             Random r = new Random();
-            for (int i = 0; i < 10; ++i) {
-                Metric m = new Metric("Metric-01", r.nextDouble() * 20);
-                kSession.insert(m);
-                System.out.println(m);
-            }
-            for (int i = 0; i < 10; ++i) {
-                Metric m = new Metric("Metric-02", r.nextDouble() * 20);
+            for (Metric m : metrics) {
                 kSession.insert(m);
                 System.out.println(m);
             }
 
             kSession.fireAllRules();
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static final void main(String[] args) {
+        try {
+
+            Set<Metric> metrics = new HashSet<Metric>();
+            Random r = new Random();
+            for (int i = 0; i < 10; ++i) {
+                Metric m = new Metric("Metric-01", r.nextDouble() * 20);
+                metrics.add(m);
+            }
+            for (int i = 0; i < 10; ++i) {
+                Metric m = new Metric("Metric-02", r.nextDouble() * 20);
+                metrics.add(m);
+            }
+
+            run(metrics);
+
         } catch (Throwable t) {
             t.printStackTrace();
         }

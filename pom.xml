@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>alerts</groupId>
-  <artifactId>alerts</artifactId>
-  <version>1.0</version>
+  <groupId>org.rhq.next.alerts</groupId>
+  <artifactId>rhq-next-alerts</artifactId>
+  <version>0.1</version>
+  <packaging>jar</packaging>  
 
 <!-- Drools Maven BOM (Bill of Materials) -->
  <dependencyManagement>
