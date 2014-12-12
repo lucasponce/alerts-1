@@ -28,4 +28,9 @@ public class Alert {
         this.matches = matches;
     }
 
+    @Override
+    public String toString() {
+        return "Alert [triggerId=" + triggerId + ", matches=" + matches + "]";
+    }
+
 }

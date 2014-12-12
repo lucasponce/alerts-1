@@ -2,10 +2,13 @@
 package rules
 
 //list any import classes here.
+import com.alert.condition.Alert;
 import com.alert.condition.ConditionMatch;
 import com.alert.condition.ThresholdCondition;
 import com.alert.data.Metric;
 import com.alert.trigger.Trigger;
+
+import java.util.HashSet;
 
 
 
@@ -36,15 +39,22 @@ rule AlertOneCondition
         System.out.println( "AlertOneCondition! " + $log );
         $t.setActive( false );
         update( $t );
+        HashSet<ConditionMatch> conditions = new HashSet<ConditionMatch>(1);
+        conditions.add($cm);
+        insert(new Alert( $tid, conditions )); 
 end
 
 rule AlertTwoCondition
     when
         $t  : Trigger( active == true, $tid : id )    
         $cm1 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
-        $cm2 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )        
+        $cm2 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )
     then
         System.out.println( "AlertTwoCondition!\n  " + $log1 + "\n  " + $log2 );
         $t.setActive( false );
         update( $t );
+        HashSet<ConditionMatch> conditions = new HashSet<ConditionMatch>(2);
+        conditions.add($cm1);
+        conditions.add($cm2);
+        insert(new Alert( $tid, conditions ));
 end

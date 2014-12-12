@@ -1,9 +1,12 @@
 package com.sample;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import com.alert.condition.Alert;
 import com.alert.condition.ThresholdCondition;
 import com.alert.condition.ThresholdCondition.Operator;
 import com.alert.data.Metric;
@@ -12,18 +15,22 @@ import com.alert.trigger.Trigger;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 
 /**
  * This is a sample class to launch a rule.
  */
 public class AlertTest {
 
-    public static final void run(Set<Metric> metrics) {
+    public static final Collection<Alert> run(Set<Metric> metrics) {
+        KieSession kSession = null;
+        Collection<Alert> result = null;
+
         try {
             // load up the knowledge base
             KieServices ks = KieServices.Factory.get();
             KieContainer kContainer = ks.getKieClasspathContainer();
-            KieSession kSession = kContainer.newKieSession("ksession-rules");
+            kSession = kContainer.newKieSession("ksession-rules");
 
             // go !
             Trigger t1 = new Trigger("trigger-1", "metric-01-low");
@@ -47,9 +54,21 @@ public class AlertTest {
 
             kSession.fireAllRules();
 
+            result = (Collection<Alert>) kSession.getObjects(new ObjectFilter() {
+                public boolean accept(Object o) {
+                    return o instanceof Alert;
+                }
+            });
+
         } catch (Throwable t) {
             t.printStackTrace();
+        } finally {
+            if (null != kSession) {
+                kSession.dispose();
+            }
         }
+
+        return result == null ? new ArrayList<Alert>() : result;
     }
 
     public static final void main(String[] args) {

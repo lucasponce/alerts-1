@@ -32,4 +32,9 @@ public class ConditionMatch extends Condition {
         this.time = time;
     }
 
+    @Override
+    public String toString() {
+        return "ConditionMatch [log=" + log + ", time=" + time + "]";
+    }
+
 }
