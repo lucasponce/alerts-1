@@ -1,37 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.rhq.next.alerts</groupId>
-  <artifactId>rhq-next-alerts</artifactId>
-  <version>0.1</version>
-  <packaging>jar</packaging>  
+    <parent>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
-<!-- Drools Maven BOM (Bill of Materials) -->
- <dependencyManagement>
-   <dependencies>
-     <dependency>
-       <groupId>org.drools</groupId>
-        <artifactId>drools-bom</artifactId>
-        <type>pom</type>
-        <version>6.1.0.Final</version>
-        <scope>import</scope>
-     </dependency>
-   </dependencies>
- </dependencyManagement>
+    <groupId>org.hawkular.alerts</groupId>
+    <artifactId>hawkular-alerts-parent</artifactId>
+    <version>0.1</version>
+    <packaging>pom</packaging>
 
- <!-- Required dependencies -->
- <dependencies>
-   <dependency>
-       <groupId>org.kie</groupId>
-       <artifactId>kie-api</artifactId>
-     </dependency>
-     <dependency>
-       <groupId>org.drools</groupId>
-       <artifactId>drools-compiler</artifactId>
-       <scope>runtime</scope>
-     </dependency>
- </dependencies>
- 
+    <properties>
+        <org.hawkular.wildfly.home>${basedir}/../../rhq-next-agent/rhq-next-agent-distro/target/wildfly-${version.org.wildfly}</org.hawkular.wildfly.home>
+        <org.hawkular.wildfly.deployments>${org.hawkular.wildfly.home}/modules/system/layers/base/org/rhq/msg/broker/main/deployments</org.hawkular.wildfly.deployments>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hawkular</groupId>
+                <artifactId>hawkular-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-bom</artifactId>
+                <type>pom</type>
+                <version>6.1.0.Final</version>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>alert-engine</module>
+        <module>alert-mdb</module>
+        <module>alert-notif-mdb</module>
+    </modules>
+
 </project>

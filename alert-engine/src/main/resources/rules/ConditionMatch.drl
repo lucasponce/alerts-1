@@ -18,7 +18,7 @@ import function com.alert.condition.ThresholdCondition.match;
 
 rule Threshold
     when 
-        $t  : Trigger( active == true, $tid : id ) 
+        $t  : Trigger( active == true, $tid : id )
         $tc : ThresholdCondition ( triggerId == $tid, $mid : metricId, $th : threshold, $op : operator)
         $m : Metric( $mid == id, $value : value)
         eval( match( $op, $th, $value ) )
@@ -46,7 +46,7 @@ end
 
 rule AlertTwoCondition
     when
-        $t  : Trigger( active == true, $tid : id )    
+        $t  : Trigger( active == true, $tid : id )
         $cm1 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
         $cm2 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )
     then
