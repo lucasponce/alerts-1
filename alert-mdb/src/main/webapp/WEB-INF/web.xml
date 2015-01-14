@@ -4,7 +4,7 @@
       version="3.0"> 
     <servlet>
         <servlet-name>QueueSendServlet</servlet-name>
-        <servlet-class>org.rhq.msg.sample.mdb.QueueSendServlet</servlet-class>
+        <servlet-class>org.hawkular.alerts.sample.mdb.QueueSendServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

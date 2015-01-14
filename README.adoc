@@ -1,0 +1,16 @@
+A sample MDB inside a war for rhq.msg that listens to queue 'QueueName'.
+
+This requires the resource adapter installed.
+
+Here's how to set this up:
+
+1. Build hawkular-bus with -Pdev (the messaging framework and wildfly modules)
+   (cd <hawkular-bus>; mvn clean install -Pdev)
+2. Build this demo:
+   mvn -Pdev -Dorg.rhq.next.wildfly.home=<hawkular-bus>/hawkular-nest/hawkular-nest-distro/target/wildfly-<version>
+3. update standalone.xml with the proper smtp host:
+   <hawkular-bus>/hawkular-nest/hawkular-nest-distro/target/wildfly-<version>/standalone/conf/standalone.xml
+4. Run the Wildfly server:
+   <hawkular-bus>/hawkular-nest/hawkular-nest-distro/target/wildfly-<version>/bin/standalone.sh
+5. Send in some test metric data:
+   curl -d "body={"metricData":{"tenantId":"tid","metricName":"Metric-01","dataPoints":[{"timestamp":123,"value":4.2}]}}" http://localhost:8080/hawkular-bus/message/MetricsQueueName?type=queue

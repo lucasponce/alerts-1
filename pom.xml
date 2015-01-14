@@ -15,8 +15,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <org.hawkular.wildfly.home>${basedir}/../../rhq-next-agent/rhq-next-agent-distro/target/wildfly-${version.org.wildfly}</org.hawkular.wildfly.home>
-        <org.hawkular.wildfly.deployments>${org.hawkular.wildfly.home}/modules/system/layers/base/org/rhq/msg/broker/main/deployments</org.hawkular.wildfly.deployments>
+        <org.hawkular.wildfly.home>${basedir}/../../hawkular-bus/hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}</org.hawkular.wildfly.home>
+        <org.hawkular.wildfly.deployments>${org.hawkular.wildfly.home}/modules/system/layers/base/org/hawkular/nest/main/deployments</org.hawkular.wildfly.deployments>
     </properties>
 
     <dependencyManagement>

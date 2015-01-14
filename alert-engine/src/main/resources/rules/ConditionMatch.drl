@@ -2,11 +2,11 @@
 package rules
 
 //list any import classes here.
-import com.alert.condition.Alert;
-import com.alert.condition.ConditionMatch;
-import com.alert.condition.ThresholdCondition;
-import com.alert.data.Metric;
-import com.alert.trigger.Trigger;
+import org.hawkular.alerts.condition.Alert;
+import org.hawkular.alerts.condition.ConditionMatch;
+import org.hawkular.alerts.condition.ThresholdCondition;
+import org.hawkular.alerts.data.Metric;
+import org.hawkular.alerts.trigger.Trigger;
 
 import java.util.HashSet;
 
@@ -14,7 +14,7 @@ import java.util.HashSet;
 
 //declare any global variables here
 
-import function com.alert.condition.ThresholdCondition.match;
+import function org.hawkular.alerts.condition.ThresholdCondition.match;
 
 rule Threshold
     when 

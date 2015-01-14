@@ -22,15 +22,15 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- The agent will provide these -->
+        <!-- The hawkular platform will provide these -->
         <dependency>
-            <groupId>org.rhq.msg</groupId>
-            <artifactId>rhq-msg-mdb</artifactId>
+            <groupId>org.hawkular.bus</groupId>
+            <artifactId>hawkular-bus-mdb</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- The agent will provide these transitive deps from common -->
+        <!-- The hawkular platform will provide these transitive deps from common -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
