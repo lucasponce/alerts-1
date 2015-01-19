@@ -21,32 +21,32 @@ public class ThresholdRangeCondition extends Condition {
         }
     };
 
-    private String metricId;
+    private String dataId;
     private Operator operatorLow;
     private Operator operatorHigh;
     private Double thresholdLow;
     private Double thresholdHigh;
     private boolean inRange;
 
-    public ThresholdRangeCondition(String triggerId, String metricId, int conditionSetSize, int conditionSetIndex,
+    public ThresholdRangeCondition(String triggerId, String dataId, int conditionSetSize, int conditionSetIndex,
         Operator operatorLow, Operator operatorHigh, Double thresholdLow, Double thresholdHigh, boolean inRange) {
 
         super(triggerId, conditionSetSize, conditionSetIndex);
 
-        this.metricId = metricId;
+        this.dataId = dataId;
         this.operatorLow = operatorLow;
-        this.operatorLow = operatorHigh;
+		this.operatorHigh = operatorHigh;
         this.thresholdLow = thresholdLow;
         this.thresholdHigh = thresholdHigh;
         this.inRange = inRange;
     }
 
-    public String getMetricId() {
-        return metricId;
+	public String getDataId() {
+        return dataId;
     }
 
-    public void setMetricId(String metricId) {
-        this.metricId = metricId;
+	public void setDataId(String dataId) {
+        this.dataId = dataId;
     }
 
     public Operator getOperatorLow() {
@@ -94,37 +94,42 @@ public class ThresholdRangeCondition extends Condition {
         return getTriggerId() + " : " + value + " " + range;
     }
 
-    static public boolean match(Operator operatorLow, Operator operatorHigh, double thresholdLow, double thresholdHigh,
+	static public boolean thresholdRangeMatch(Operator operatorLow,
+			Operator operatorHigh, double thresholdLow, double thresholdHigh,
         boolean inRange, double value) {
 
-        boolean low = false;
-        boolean high = false;
+		boolean aboveLow = false;
+		boolean belowHigh = false;
 
         switch (operatorLow) {
         case INCLUSIVE:
-            low = value >= thresholdLow;
+			aboveLow = value >= thresholdLow;
             break;
         case EXCLUSIVE:
-            low = value > thresholdLow;
+			aboveLow = value > thresholdLow;
             break;
         default:
             System.out.println("UNKNOWN OPERATOR LOW: " + operatorLow.name());
             return false;
         }
+
+		if (!aboveLow && inRange) {
+			return false;
+		}
+
         switch (operatorHigh) {
         case INCLUSIVE:
-            high = value <= thresholdHigh;
+			belowHigh = value <= thresholdHigh;
             break;
         case EXCLUSIVE:
-            high = value < thresholdHigh;
+			belowHigh = value < thresholdHigh;
             break;
         default:
             System.out.println("UNKNOWN OPERATOR HIGH: " + operatorHigh.name());
             return false;
         }
 
-        boolean isMatch = low & high;
-        return inRange ? isMatch : !isMatch;
+		return (belowHigh == inRange);
     }
 
 }

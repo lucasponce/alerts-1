@@ -4,56 +4,55 @@ import org.hawkular.alerts.data.Availability.AvailabilityType;
 
 public class AvailabilityCondition extends Condition {
 
-    public enum Operator {
-        RED, YELLOW, GREEN, NOT_GREEN
-    };
+	public enum Operator {
+		DOWN, NOT_UP, UP
+	};
 
-    private String metricId;
-    private Operator operator;
+	private String dataId;
+	private Operator operator;
 
-    public AvailabilityCondition(String triggerId, String metricId, int conditionSetSize, int conditionSetIndex,
-        Operator operator) {
+	public AvailabilityCondition(String triggerId, String dataId,
+			int conditionSetSize, int conditionSetIndex, Operator operator) {
 
-        super(triggerId, conditionSetSize, conditionSetIndex);
+		super(triggerId, conditionSetSize, conditionSetIndex);
 
-        this.metricId = metricId;
-        this.operator = operator;
-    }
+		this.dataId = dataId;
+		this.operator = operator;
+	}
 
-    public String getMetricId() {
-        return metricId;
-    }
+	public String getDataId() {
+		return dataId;
+	}
 
-    public void setMetricId(String metricId) {
-        this.metricId = metricId;
-    }
+	public void setDataId(String dataId) {
+		this.dataId = dataId;
+	}
 
-    public Operator getOperator() {
-        return operator;
-    }
+	public Operator getOperator() {
+		return operator;
+	}
 
-    public void setOperator(Operator operator) {
-        this.operator = operator;
-    }
+	public void setOperator(Operator operator) {
+		this.operator = operator;
+	}
 
-    public String getLog(double value) {
-        return getTriggerId() + " : " + value + " " + getOperator().name();
-    }
+	public String getLog(AvailabilityType value) {
+		return getTriggerId() + " : " + value + " " + getOperator().name();
+	}
 
-    static public boolean match(Operator operator, AvailabilityType value) {
-        switch (operator) {
-        case RED:
-            return value == AvailabilityType.RED;
-        case YELLOW:
-            return value == AvailabilityType.YELLOW;
-        case GREEN:
-            return value == AvailabilityType.GREEN;
-        case NOT_GREEN:
-            return value != AvailabilityType.GREEN;
-        default:
-            System.out.println("UNKNOWN OPERATOR: " + operator.name());
-            return false;
-        }
-    }
+	static public boolean availabilityMatch(Operator operator,
+			AvailabilityType value) {
+		switch (operator) {
+		case DOWN:
+			return value == AvailabilityType.DOWN;
+		case UP:
+			return value == AvailabilityType.UP;
+		case NOT_UP:
+			return value != AvailabilityType.UP;
+		default:
+			System.out.println("UNKNOWN OPERATOR: " + operator.name());
+			return false;
+		}
+	}
 
 }

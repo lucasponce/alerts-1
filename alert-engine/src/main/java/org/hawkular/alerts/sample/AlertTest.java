@@ -7,9 +7,17 @@ import java.util.Random;
 import java.util.Set;
 
 import org.hawkular.alerts.condition.Alert;
+import org.hawkular.alerts.condition.AvailabilityCondition;
+import org.hawkular.alerts.condition.CompareCondition;
+import org.hawkular.alerts.condition.StringCondition;
 import org.hawkular.alerts.condition.ThresholdCondition;
 import org.hawkular.alerts.condition.ThresholdCondition.Operator;
-import org.hawkular.alerts.data.Metric;
+import org.hawkular.alerts.condition.ThresholdRangeCondition;
+import org.hawkular.alerts.data.Availability;
+import org.hawkular.alerts.data.Availability.AvailabilityType;
+import org.hawkular.alerts.data.Data;
+import org.hawkular.alerts.data.NumericData;
+import org.hawkular.alerts.data.StringData;
 import org.hawkular.alerts.trigger.Trigger;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -21,7 +29,7 @@ import org.kie.api.runtime.ObjectFilter;
  */
 public class AlertTest {
 
-	public static final Collection<Alert> run(Set<Metric> metrics) {
+	public static final Collection<Alert> run(Set<Data> datums) {
 		KieSession kSession = null;
 		Collection<Alert> result = null;
 
@@ -32,26 +40,60 @@ public class AlertTest {
 			kSession = kContainer.newKieSession("ksession-rules");
 
 			// go !
-			Trigger t1 = new Trigger("trigger-1", "metric-01-low");
-			ThresholdCondition cs1c1 = new ThresholdCondition("trigger-1",
-					"Metric-01", 1, 1, Operator.LT, 5.0);
+			Trigger t1 = new Trigger("trigger-1", "NumericData-01-low");
+			ThresholdCondition t1c1 = new ThresholdCondition("trigger-1",
+					"NumericData-01", 1, 1, Operator.LT, 5.0);
 
-			Trigger t2 = new Trigger("trigger-2", "metric-01-02-high");
-			ThresholdCondition cs2c1 = new ThresholdCondition("trigger-2",
-					"Metric-01", 2, 1, Operator.GTE, 15.0);
-			ThresholdCondition cs2c2 = new ThresholdCondition("trigger-2",
-					"Metric-02", 2, 2, Operator.GTE, 15.0);
+			Trigger t2 = new Trigger("trigger-2", "NumericData-01-02-high");
+			ThresholdCondition t2c1 = new ThresholdCondition("trigger-2",
+					"NumericData-01", 2, 1, Operator.GTE, 15.0);
+			ThresholdCondition t2c2 = new ThresholdCondition("trigger-2",
+					"NumericData-02", 2, 2, Operator.GTE, 15.0);
+
+			Trigger t3 = new Trigger("trigger-3", "NumericData-03-range");
+			ThresholdRangeCondition t3c1 = new ThresholdRangeCondition(
+					"trigger-3", "NumericData-03", 1, 1,
+					ThresholdRangeCondition.Operator.INCLUSIVE,
+					ThresholdRangeCondition.Operator.INCLUSIVE, 10.0, 15.0,
+					true);
+
+			Trigger t4 = new Trigger("trigger-4", "CompareData-01-d1-lthalf-d2");
+			CompareCondition t4c1 = new CompareCondition("trigger-4", 1, 1,
+					"NumericData-01", CompareCondition.Operator.LT, 0.5,
+					"NumericData-02");
+
+			Trigger t5 = new Trigger("trigger-5", "StringData-01-starts");
+			StringCondition t5c1 = new StringCondition("trigger-5",
+					"StringData-01", 1, 1,
+					StringCondition.Operator.STARTS_WITH, "Fred", false);
+
+			Trigger t6 = new Trigger("trigger-6", "Availability-01-NOT-UP");
+			AvailabilityCondition t6c1 = new AvailabilityCondition("trigger-6",
+					"Availability-01", 1, 1,
+					AvailabilityCondition.Operator.NOT_UP);
 
 			kSession.insert(t1);
-			kSession.insert(t2);
-			kSession.insert(cs1c1);
-			kSession.insert(cs2c1);
-			kSession.insert(cs2c2);
+			kSession.insert(t1c1);
 
-			Random r = new Random();
-			for (Metric m : metrics) {
-				kSession.insert(m);
-				System.out.println(m);
+			kSession.insert(t2);
+			kSession.insert(t2c1);
+			kSession.insert(t2c2);
+
+			kSession.insert(t3);
+			kSession.insert(t3c1);
+
+			kSession.insert(t4);
+			kSession.insert(t4c1);
+
+			kSession.insert(t5);
+			kSession.insert(t5c1);
+
+			kSession.insert(t6);
+			kSession.insert(t6c1);
+
+			for (Data d : datums) {
+				kSession.insert(d);
+				System.out.println(d);
 			}
 
 			kSession.fireAllRules();
@@ -77,18 +119,34 @@ public class AlertTest {
 	public static final void main(String[] args) {
 		try {
 
-			Set<Metric> metrics = new HashSet<Metric>();
+			Set<Data> datums = new HashSet<Data>();
 			Random r = new Random();
 			for (int i = 0; i < 10; ++i) {
-				Metric m = new Metric("Metric-01", r.nextDouble() * 20);
-				metrics.add(m);
+				NumericData m = new NumericData("NumericData-01",
+						r.nextDouble() * 20);
+				datums.add(m);
 			}
 			for (int i = 0; i < 10; ++i) {
-				Metric m = new Metric("Metric-02", r.nextDouble() * 20);
-				metrics.add(m);
+				NumericData m = new NumericData("NumericData-02",
+						r.nextDouble() * 20);
+				datums.add(m);
+			}
+			for (int i = 0; i < 10; ++i) {
+				NumericData m = new NumericData("NumericData-03",
+						r.nextDouble() * 20);
+				datums.add(m);
 			}
 
-			run(metrics);
+			datums.add(new StringData("StringData-01", "Barney"));
+			datums.add(new StringData("StringData-01", "Fred and Barney"));
+			datums.add(new StringData("StringData-02", "Fred Flintstone"));
+
+			datums.add(new Availability("Availability-01", AvailabilityType.UP));
+			datums.add(new Availability("Availability-01", AvailabilityType.UP));
+			datums.add(new Availability("Availability-01",
+					AvailabilityType.UNAVAILABLE));
+
+			run(datums);
 
 		} catch (Throwable t) {
 			t.printStackTrace();

@@ -3,9 +3,15 @@ package rules
 
 //list any import classes here.
 import org.hawkular.alerts.condition.Alert;
+import org.hawkular.alerts.condition.AvailabilityCondition;
 import org.hawkular.alerts.condition.ConditionMatch;
+import org.hawkular.alerts.condition.CompareCondition;
+import org.hawkular.alerts.condition.StringCondition;
 import org.hawkular.alerts.condition.ThresholdCondition;
-import org.hawkular.alerts.data.Metric;
+import org.hawkular.alerts.condition.ThresholdRangeCondition;
+import org.hawkular.alerts.data.Availability;
+import org.hawkular.alerts.data.NumericData;
+import org.hawkular.alerts.data.StringData;
 import org.hawkular.alerts.trigger.Trigger;
 
 import java.util.HashSet;
@@ -14,21 +20,81 @@ import java.util.HashSet;
 
 //declare any global variables here
 
-import function org.hawkular.alerts.condition.ThresholdCondition.match;
+import function org.hawkular.alerts.condition.AvailabilityCondition.availabilityMatch;
+import function org.hawkular.alerts.condition.CompareCondition.compareMatch;
+import function org.hawkular.alerts.condition.StringCondition.stringMatch;
+import function org.hawkular.alerts.condition.ThresholdCondition.thresholdMatch;
+import function org.hawkular.alerts.condition.ThresholdRangeCondition.thresholdRangeMatch;
 
 rule Threshold
     when 
-        $t  : Trigger( active == true, $tid : id )
-        $tc : ThresholdCondition ( triggerId == $tid, $mid : metricId, $th : threshold, $op : operator)
-        $m : Metric( $mid == id, $value : value)
-        eval( match( $op, $th, $value ) )
+        $t : Trigger( active == true, $tid : id )
+        $c : ThresholdCondition ( triggerId == $tid, $did : dataId, $th : threshold, $op : operator)
+        NumericData( $did == id, $value : value)
+        eval( thresholdMatch( $op, $th, $value ) )
     then
-        String log = $tc.getLog($value);
+        String log = $c.getLog($value);
         System.out.println( "Threshold Match! " + log );
-        ConditionMatch cm = new ConditionMatch($tc, log);
+        ConditionMatch cm = new ConditionMatch($c, log);
         insertLogical(cm);
 end
 
+
+rule ThresholdRange
+    when 
+        $t : Trigger( active == true, $tid : id )
+        $c : ThresholdRangeCondition ( triggerId == $tid, $did : dataId, $opLow : operatorLow, $opHigh : operatorHigh, $thLow : thresholdLow, $thHigh : thresholdHigh, $inRange : inRange )
+        NumericData( $did == id, $value : value)
+        eval( thresholdRangeMatch( $opLow, $opHigh, $thLow, $thHigh, $inRange, $value ) )
+    then
+        String log = $c.getLog($value);
+        System.out.println( "ThresholdRange Match! " + log );
+        ConditionMatch cm = new ConditionMatch($c, log);
+        insertLogical(cm);
+end
+
+
+rule Compare
+    when 
+        $t : Trigger( active == true, $tid : id )
+        $c : CompareCondition ( triggerId == $tid, $d1id : data1Id, $d2id : data2Id, $op : operator, $d2Mult : data2Multiplier )
+        NumericData( $d1id == id, $value1 : value)
+        NumericData( $d2id == id, $value2 : value)
+        eval( compareMatch( $op, $d2Mult, $value1, $value2 ) )
+    then
+        String log = $c.getLog($value1, $value2);
+        System.out.println( "DataCompare Match! " + log );
+        ConditionMatch cm = new ConditionMatch($c, log);
+        insertLogical(cm);
+end
+
+
+rule Availability
+    when 
+        $t : Trigger( active == true, $tid : id )
+        $c : AvailabilityCondition ( triggerId == $tid, $did : dataId, $op : operator )
+        Availability( $did == id, $value : value)
+        eval( availabilityMatch( $op, $value ) )
+    then
+        String log = $c.getLog($value);
+        System.out.println( "Availability Match! " + log );
+        ConditionMatch cm = new ConditionMatch($c, log);
+        insertLogical(cm);
+end
+
+
+rule String
+    when 
+        $t : Trigger( active == true, $tid : id )
+        $c : StringCondition ( triggerId == $tid, $did : dataId, $op : operator, $pattern : pattern, $ignoreCase : ignoreCase )
+        StringData( $did == id, $value : value)
+        eval( stringMatch( $op, $pattern, $value, $ignoreCase ) )
+    then
+        String log = $c.getLog($value);
+        System.out.println( "String Match! " + log );
+        ConditionMatch cm = new ConditionMatch($c, log);
+        insertLogical(cm);
+end
 
 
 rule AlertOneCondition

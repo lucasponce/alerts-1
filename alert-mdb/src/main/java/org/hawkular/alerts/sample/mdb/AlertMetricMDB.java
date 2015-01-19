@@ -17,7 +17,8 @@ import javax.jms.MessageListener;
 import com.google.gson.annotations.Expose;
 
 import org.hawkular.alerts.condition.Alert;
-import org.hawkular.alerts.data.Metric;
+import org.hawkular.alerts.data.Data;
+import org.hawkular.alerts.data.NumericData;
 import org.hawkular.alerts.sample.AlertTest;
 import org.hawkular.alerts.sample.mdb.AlertMetricMDB.MetricMessage;
 import org.hawkular.bus.common.BasicMessage;
@@ -32,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @MessageDriven(messageListenerInterface = MessageListener.class, activationConfig = {
- @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "MetricsQueueName") // ,
 // @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "MyFilter = 'fnf'")
 })
@@ -45,9 +46,9 @@ public class AlertMetricMDB extends BasicMessageListener<MetricMessage> {
     protected void onBasicMessage(MetricMessage msg) {
         MetricData md = msg.getMetricData();
         log.info(" --> " + md);
-        Set<Metric> metrics = new HashSet<Metric>();
+        Set<Data> metrics = new HashSet<Data>();
         for (NumericDataPoint dp : md.dataPoints) {
-            metrics.add(new Metric(md.getMetricName(), dp.getValue()));
+            metrics.add(new NumericData(md.getMetricName(), dp.getValue()));
         }
         Collection<Alert> alerts = AlertTest.run(metrics);
         log.info("Generated [" + alerts.size() + "] Alerts:");
@@ -207,6 +208,5 @@ public class AlertMetricMDB extends BasicMessageListener<MetricMessage> {
         }
 
     }
-
 
 }

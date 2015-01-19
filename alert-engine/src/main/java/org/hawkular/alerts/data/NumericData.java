@@ -1,10 +1,10 @@
 package org.hawkular.alerts.data;
 
-public class Metric extends Data {
+public class NumericData extends Data {
 
     private Double value;
 
-    public Metric(String id, Double value) {
+	public NumericData(String id, Double value) {
         super(id);
 
         this.value = value;
@@ -20,7 +20,7 @@ public class Metric extends Data {
 
     @Override
     public String toString() {
-        return "Metric [value=" + value + ", " + getId() + "]";
+		return "Data [value=" + value + ", " + getId() + "]";
     }
 
 }

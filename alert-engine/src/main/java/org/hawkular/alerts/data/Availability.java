@@ -3,7 +3,7 @@ package org.hawkular.alerts.data;
 public class Availability extends Data {
 
     public enum AvailabilityType {
-        RED, YELLOW, GREEN, GREY
+        UP, DOWN, UNAVAILABLE
     };
 
     private AvailabilityType value;

@@ -2,66 +2,69 @@ package org.hawkular.alerts.condition;
 
 public class ThresholdCondition extends Condition {
 
-    public enum Operator {
-        LT, GT, LTE, GTE
-    };
+	public enum Operator {
+		LT, GT, LTE, GTE
+	};
 
-    private String metricId;
-    private Operator operator;
-    private Double threshold;
+	private String dataId;
+	private Operator operator;
+	private Double threshold;
 
-    public ThresholdCondition(String triggerId, String metricId, int conditionSetSize, int conditionSetIndex,
-        Operator operator, Double threshold) {
+	public ThresholdCondition(String triggerId, String dataId,
+			int conditionSetSize, int conditionSetIndex, Operator operator,
+			Double threshold) {
 
-        super(triggerId, conditionSetSize, conditionSetIndex);
+		super(triggerId, conditionSetSize, conditionSetIndex);
 
-        this.metricId = metricId;
-        this.operator = operator;
-        this.threshold = threshold;
-    }
+		this.dataId = dataId;
+		this.operator = operator;
+		this.threshold = threshold;
+	}
 
-    public String getMetricId() {
-        return metricId;
-    }
+	public String getDataId() {
+		return dataId;
+	}
 
-    public void setMetricId(String metricId) {
-        this.metricId = metricId;
-    }
+	public void setDataId(String dataId) {
+		this.dataId = dataId;
+	}
 
-    public Operator getOperator() {
-        return operator;
-    }
+	public Operator getOperator() {
+		return operator;
+	}
 
-    public void setOperator(Operator operator) {
-        this.operator = operator;
-    }
+	public void setOperator(Operator operator) {
+		this.operator = operator;
+	}
 
-    public Double getThreshold() {
-        return threshold;
-    }
+	public Double getThreshold() {
+		return threshold;
+	}
 
-    public void setThreshold(Double threshold) {
-        this.threshold = threshold;
-    }
+	public void setThreshold(Double threshold) {
+		this.threshold = threshold;
+	}
 
-    public String getLog(double value) {
-        return getTriggerId() + " : " + value + " " + getOperator().name() + " " + getThreshold();
-    }
+	public String getLog(double value) {
+		return getTriggerId() + " : " + value + " " + getOperator().name()
+				+ " " + getThreshold();
+	}
 
-    static public boolean match(Operator operator, double threshold, double value) {
-        switch (operator) {
-        case LT:
-            return value < threshold;
-        case GT:
-            return value > threshold;
-        case LTE:
-            return value <= threshold;
-        case GTE:
-            return value >= threshold;
-        default:
-            System.out.println("UNKNOWN OPERATOR: " + operator.name());
-            return false;
-        }
-    }
+	static public boolean thresholdMatch(Operator operator, double threshold,
+			double value) {
+		switch (operator) {
+		case LT:
+			return value < threshold;
+		case GT:
+			return value > threshold;
+		case LTE:
+			return value <= threshold;
+		case GTE:
+			return value >= threshold;
+		default:
+			System.out.println("UNKNOWN OPERATOR: " + operator.name());
+			return false;
+		}
+	}
 
 }
