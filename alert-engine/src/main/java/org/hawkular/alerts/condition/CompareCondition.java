@@ -58,15 +58,14 @@ public class CompareCondition extends Condition {
 		this.operator = operator;
 	}
 
-	public String getLog(double data1Value, double data2Value) {
-		Double val = getData2Multiplier() * data2Value;
-		return getTriggerId() + " : " + data1Value + " " + getOperator().name()
-				+ " " + val + " (" + getData2Multiplier() + "*" + data2Value
+	public String getLog(double value1, double value2) {
+		Double val = getData2Multiplier() * value2;
+		return getTriggerId() + " : " + value1 + " " + getOperator().name()
+				+ " " + val + " (" + getData2Multiplier() + "*" + value2
 				+ ")";
 	}
 
-	static public boolean compareMatch(Operator operator,
-			double data2Multiplier, double data1Value, double data2Value) {
+    public boolean match(double data1Value, double data2Value) {
 		double threshold = (data2Multiplier * data2Value);
 		switch (operator) {
 		case LT:

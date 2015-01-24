@@ -4,12 +4,19 @@ package rules
 //list any import classes here.
 import org.hawkular.alerts.condition.Alert;
 import org.hawkular.alerts.condition.AvailabilityCondition;
-import org.hawkular.alerts.condition.ConditionMatch;
+import org.hawkular.alerts.condition.AvailabilityConditionEval;
+import org.hawkular.alerts.condition.ConditionEval;
 import org.hawkular.alerts.condition.CompareCondition;
+import org.hawkular.alerts.condition.CompareConditionEval;
 import org.hawkular.alerts.condition.StringCondition;
+import org.hawkular.alerts.condition.StringConditionEval;
 import org.hawkular.alerts.condition.ThresholdCondition;
+import org.hawkular.alerts.condition.ThresholdConditionEval;
 import org.hawkular.alerts.condition.ThresholdRangeCondition;
+import org.hawkular.alerts.condition.ThresholdRangeConditionEval;
+import org.hawkular.alerts.dampening.Dampening;
 import org.hawkular.alerts.data.Availability;
+import org.hawkular.alerts.data.Availability.AvailabilityType
 import org.hawkular.alerts.data.NumericData;
 import org.hawkular.alerts.data.StringData;
 import org.hawkular.alerts.trigger.Trigger;
@@ -20,107 +27,127 @@ import java.util.HashSet;
 
 //declare any global variables here
 
-import function org.hawkular.alerts.condition.AvailabilityCondition.availabilityMatch;
-import function org.hawkular.alerts.condition.CompareCondition.compareMatch;
-import function org.hawkular.alerts.condition.StringCondition.stringMatch;
-import function org.hawkular.alerts.condition.ThresholdCondition.thresholdMatch;
-import function org.hawkular.alerts.condition.ThresholdRangeCondition.thresholdRangeMatch;
+
+////// CONDITION MATCHING
 
 rule Threshold
     when 
         $t : Trigger( active == true, $tid : id )
-        $c : ThresholdCondition ( triggerId == $tid, $did : dataId, $th : threshold, $op : operator)
+        $c : ThresholdCondition ( triggerId == $tid, $did : dataId )
         NumericData( $did == id, $value : value)
-        eval( thresholdMatch( $op, $th, $value ) )
     then
-        String log = $c.getLog($value);
-        System.out.println( "Threshold Match! " + log );
-        ConditionMatch cm = new ConditionMatch($c, log);
-        insertLogical(cm);
+        ThresholdConditionEval ce = new ThresholdConditionEval($c, (Double)$value);
+        System.out.println( "Threshold Eval: " + (ce.isMatch() ? "  Match! " : "no match ")  + ce.getLog() );
+        insert( ce );
 end
-
 
 rule ThresholdRange
     when 
         $t : Trigger( active == true, $tid : id )
-        $c : ThresholdRangeCondition ( triggerId == $tid, $did : dataId, $opLow : operatorLow, $opHigh : operatorHigh, $thLow : thresholdLow, $thHigh : thresholdHigh, $inRange : inRange )
+        $c : ThresholdRangeCondition ( triggerId == $tid, $did : dataId )
         NumericData( $did == id, $value : value)
-        eval( thresholdRangeMatch( $opLow, $opHigh, $thLow, $thHigh, $inRange, $value ) )
     then
-        String log = $c.getLog($value);
-        System.out.println( "ThresholdRange Match! " + log );
-        ConditionMatch cm = new ConditionMatch($c, log);
-        insertLogical(cm);
+        ThresholdRangeConditionEval ce = new ThresholdRangeConditionEval($c, (Double)$value);
+        System.out.println( "ThresholdRange Eval: " + (ce.isMatch() ? "  Match! " : "no match ")  + ce.getLog() );
+        insert( ce );
 end
-
 
 rule Compare
     when 
         $t : Trigger( active == true, $tid : id )
-        $c : CompareCondition ( triggerId == $tid, $d1id : data1Id, $d2id : data2Id, $op : operator, $d2Mult : data2Multiplier )
+        $c : CompareCondition ( triggerId == $tid, $d1id : data1Id, $d2id : data2Id )
         NumericData( $d1id == id, $value1 : value)
         NumericData( $d2id == id, $value2 : value)
-        eval( compareMatch( $op, $d2Mult, $value1, $value2 ) )
     then
-        String log = $c.getLog($value1, $value2);
-        System.out.println( "DataCompare Match! " + log );
-        ConditionMatch cm = new ConditionMatch($c, log);
-        insertLogical(cm);
+        CompareConditionEval ce = new CompareConditionEval($c, (Double)$value1, (Double)$value2);
+        System.out.println( "Compare Eval: " + (ce.isMatch() ? "  Match! " : "no match ")  + ce.getLog() );
+        insert( ce );
 end
-
 
 rule Availability
     when 
         $t : Trigger( active == true, $tid : id )
-        $c : AvailabilityCondition ( triggerId == $tid, $did : dataId, $op : operator )
+        $c : AvailabilityCondition ( triggerId == $tid, $did : dataId )
         Availability( $did == id, $value : value)
-        eval( availabilityMatch( $op, $value ) )
     then
-        String log = $c.getLog($value);
-        System.out.println( "Availability Match! " + log );
-        ConditionMatch cm = new ConditionMatch($c, log);
-        insertLogical(cm);
+        AvailabilityConditionEval ce = new AvailabilityConditionEval($c, (AvailabilityType)$value);
+        System.out.println( "Availability Eval: " + (ce.isMatch() ? "  Match! " : "no match ")  + ce.getLog() );
+        insert( ce );
 end
-
 
 rule String
     when 
         $t : Trigger( active == true, $tid : id )
-        $c : StringCondition ( triggerId == $tid, $did : dataId, $op : operator, $pattern : pattern, $ignoreCase : ignoreCase )
+        $c : StringCondition ( triggerId == $tid, $did : dataId  )
         StringData( $did == id, $value : value)
-        eval( stringMatch( $op, $pattern, $value, $ignoreCase ) )
     then
-        String log = $c.getLog($value);
-        System.out.println( "String Match! " + log );
-        ConditionMatch cm = new ConditionMatch($c, log);
-        insertLogical(cm);
+        StringConditionEval ce = new StringConditionEval($c, (String)$value);
+        System.out.println( "String Eval: " + (ce.isMatch() ? "  Match! " : "no match ")  + ce.getLog() );
+        insert( ce );
 end
 
 
-rule AlertOneCondition
+rule RemoveProcessedData
+    when 
+        $d : NumericData()
+    then
+        System.out.println( "Retracting " + $d + "..." );
+        retract ( $d );
+end
+
+
+
+////// DAMPENING
+
+rule ProvideDefaultDampening
     when
-        $t  : Trigger( active == true, $tid : id ) 
-        $cm : ConditionMatch ( triggerId == $tid, conditionSetSize == 1, conditionSetIndex == 1, $log : log )
+        $t : Trigger( active == true, $tid : id )
+        not Dampening( triggerId == $tid )
     then
-        System.out.println( "AlertOneCondition! " + $log );
-        $t.setActive( false );
-        update( $t );
-        HashSet<ConditionMatch> conditions = new HashSet<ConditionMatch>(1);
-        conditions.add($cm);
-        insert(new Alert( $tid, conditions )); 
+        System.out.println( "Adding default dampening for trigger! " + $t.getId() );
+        Dampening d = new Dampening( $tid, Dampening.Type.STRICT, 1, 1, 0L );
+        insert(d); 
 end
 
-rule AlertTwoCondition
+
+rule DampenOneConditionTrigger
     when
         $t  : Trigger( active == true, $tid : id )
-        $cm1 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 1, $log1 : log )
-        $cm2 : ConditionMatch ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2, $log2 : log )
+        $d  : Dampening( triggerId == $tid, satisfied == false ) 
+        $ce : ConditionEval ( triggerId == $tid, conditionSetSize == 1, conditionSetIndex == 1 )
     then
-        System.out.println( "AlertTwoCondition!\n  " + $log1 + "\n  " + $log2 );
-        $t.setActive( false );
-        update( $t );
-        HashSet<ConditionMatch> conditions = new HashSet<ConditionMatch>(2);
-        conditions.add($cm1);
-        conditions.add($cm2);
-        insert(new Alert( $tid, conditions ));
+        System.out.println( "Updating dampening for and then retracting " + $ce );
+        $d.perform( $ce );
+        update( $d );
+        retract ( $ce );
+end
+
+rule DampenTwoConditionTrigger
+    when
+        $t   : Trigger( active == true, $tid : id )
+        $d   : Dampening( triggerId == $tid, satisfied == false ) 
+        $ce1 : ConditionEval ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 1 )
+        $ce2 : ConditionEval ( triggerId == $tid, conditionSetSize == 2, conditionSetIndex == 2 )
+    then
+        System.out.println( "Updating dampening for and then retracting " + $ce1 + $ce2 );
+        $d.perform( $ce1, $ce2 );
+        update( $d );
+        retract ( $ce1 );
+        retract ( $ce2 );
+end
+
+
+////// ALERT GENERATION
+
+rule AlertOnSatisfiedDampening
+    when
+        $t  : Trigger( active == true, $tid : id )
+        $d  : Dampening( triggerId == $tid, satisfied == true ) 
+    then
+        System.out.println( "AlertDampeningOneCondition! " + $d.getLog() );
+        //$t.setActive( false );
+        //update( $t );
+        insert(new Alert( $tid, $d.getSatisfyingEvals() ));
+        $d.reset(); 
+        update( $d )
 end

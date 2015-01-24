@@ -50,8 +50,7 @@ public class ThresholdCondition extends Condition {
 				+ " " + getThreshold();
 	}
 
-	static public boolean thresholdMatch(Operator operator, double threshold,
-			double value) {
+    public boolean match(Double value) {
 		switch (operator) {
 		case LT:
 			return value < threshold;

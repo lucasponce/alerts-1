@@ -1,15 +1,17 @@
 package org.hawkular.alerts.condition;
 
+import java.util.List;
 import java.util.Set;
 
 public class Alert {
     private String triggerId;
     private Set<ConditionMatch> matches;
+    private List<Set<ConditionEval>> evals;
 
-    public Alert(String triggerId, Set<ConditionMatch> matches) {
+    public Alert(String triggerId, List<Set<ConditionEval>> evals) {
         super();
         this.triggerId = triggerId;
-        this.matches = matches;
+        this.evals = evals;
     }
 
     public String getTriggerId() {
@@ -28,9 +30,13 @@ public class Alert {
         this.matches = matches;
     }
 
+    public void setEvals(List<Set<ConditionEval>> evals) {
+        this.evals = evals;
+    }
+
     @Override
     public String toString() {
-        return "Alert [triggerId=" + triggerId + ", matches=" + matches + "]";
+        return "Alert [triggerId=" + triggerId + ", satisfyingEvals=" + evals + "]";
     }
 
 }

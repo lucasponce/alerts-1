@@ -94,9 +94,7 @@ public class ThresholdRangeCondition extends Condition {
         return getTriggerId() + " : " + value + " " + range;
     }
 
-	static public boolean thresholdRangeMatch(Operator operatorLow,
-			Operator operatorHigh, double thresholdLow, double thresholdHigh,
-        boolean inRange, double value) {
+    public boolean match(double value) {
 
 		boolean aboveLow = false;
 		boolean belowHigh = false;

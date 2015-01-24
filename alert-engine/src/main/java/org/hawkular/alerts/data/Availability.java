@@ -6,26 +6,7 @@ public class Availability extends Data {
         UP, DOWN, UNAVAILABLE
     };
 
-    private AvailabilityType value;
-
     public Availability(String id, AvailabilityType value) {
-        super(id);
-
-        this.value = value;
+        super(id, value);
     }
-
-    public AvailabilityType getValue() {
-        return value;
-    }
-
-    public void setValue(AvailabilityType value) {
-        this.value = value;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Availability [value=" + value + ", " + getId() + "]";
-    }
-
 }

@@ -13,6 +13,7 @@ import org.hawkular.alerts.condition.StringCondition;
 import org.hawkular.alerts.condition.ThresholdCondition;
 import org.hawkular.alerts.condition.ThresholdCondition.Operator;
 import org.hawkular.alerts.condition.ThresholdRangeCondition;
+import org.hawkular.alerts.dampening.Dampening;
 import org.hawkular.alerts.data.Availability;
 import org.hawkular.alerts.data.Availability.AvailabilityType;
 import org.hawkular.alerts.data.Data;
@@ -42,7 +43,8 @@ public class AlertTest {
 			// go !
 			Trigger t1 = new Trigger("trigger-1", "NumericData-01-low");
 			ThresholdCondition t1c1 = new ThresholdCondition("trigger-1",
-					"NumericData-01", 1, 1, Operator.LT, 5.0);
+                    "NumericData-01", 1, 1, Operator.LT, 10.0);
+            Dampening t1d = new Dampening("trigger-1", Dampening.Type.STRICT, 2, 2, 0);
 
 			Trigger t2 = new Trigger("trigger-2", "NumericData-01-02-high");
 			ThresholdCondition t2c1 = new ThresholdCondition("trigger-2",
@@ -74,6 +76,7 @@ public class AlertTest {
 
 			kSession.insert(t1);
 			kSession.insert(t1c1);
+            kSession.insert(t1d);
 
 			kSession.insert(t2);
 			kSession.insert(t2c1);
